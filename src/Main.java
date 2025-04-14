@@ -6,18 +6,18 @@ public class Main {
     public static void main(String[] args) {
          TaskManager manager = new TaskManager();
 
-         Task task1 = manager.createTask(new Task("Задача 1", "",
+         Task task1 = manager.createTask(new Task("Задача 1", "Описание 1 задачи",
                  TaskStatus.NEW));
-         Task task2 = manager.createTask(new Task("Задача 2", "",
+         Task task2 = manager.createTask(new Task("Задача 2", "Описание 2 задачи",
                  TaskStatus.IN_PROGRESS));
-         Epic epic1 = manager.createEpic(new Epic("Эпик 1", ""));
-         Epic epic2 = manager.createEpic(new Epic("Эпик 2", ""));
+         Epic epic1 = manager.createEpic(new Epic("Эпик 1", "Описание 1 эпика"));
+         Epic epic2 = manager.createEpic(new Epic("Эпик 2", "Описание 2 эпика"));
 
-         Subtask subtask1 = manager.createSubtask(new Subtask("Подзадача 1", "",
+         Subtask subtask1 = manager.createSubtask(new Subtask("Подзадача 1", "Описание 1 подзадачи",
                  TaskStatus.NEW, epic1.getId()));
-         Subtask subtask2 = manager.createSubtask(new Subtask("Подзадача 2", "",
+         Subtask subtask2 = manager.createSubtask(new Subtask("Подзадача 2", "Описание 2 подзадачи",
                  TaskStatus.IN_PROGRESS, epic2.getId()));
-         Subtask subtask3 = manager.createSubtask(new Subtask("Подзадача", "",
+         Subtask subtask3 = manager.createSubtask(new Subtask("Подзадача 3", "Описание 3 подзадачи",
                  TaskStatus.DONE, epic2.getId()));
 
         System.out.println("Все задачи:");
