@@ -1,10 +1,13 @@
-import taskmanager.TaskManager;
-import task.*;
+import task.Task;
+import task.TaskStatus;
+import taskmanager.InMemoryTaskManager;
+import task.Epic;
+import task.Subtask;
 
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager manager = new TaskManager();
+        InMemoryTaskManager manager = new InMemoryTaskManager();
 
         int task1 = manager.createTask(new Task("Задача 1", "Описание 1 задачи",
                 TaskStatus.NEW));
