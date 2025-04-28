@@ -1,8 +1,8 @@
-package taskmanager;
+package ru.yandex.practicum.taskmanager;
 
 import org.junit.jupiter.api.Test;
-import task.Task;
-import task.TaskStatus;
+import ru.yandex.practicum.task.Task;
+import ru.yandex.practicum.task.TaskStatus;
 
 import java.util.List;
 

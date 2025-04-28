@@ -1,4 +1,4 @@
-package task;
+package ru.yandex.practicum.task;
 
 public enum TaskStatus {
     NEW,

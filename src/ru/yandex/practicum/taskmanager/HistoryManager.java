@@ -1,6 +1,6 @@
-package taskmanager;
+package ru.yandex.practicum.taskmanager;
 
-import task.Task;
+import ru.yandex.practicum.task.Task;
 import java.util.*;
 
 public interface HistoryManager {

@@ -1,4 +1,4 @@
-package taskmanager;
+package ru.yandex.practicum.taskmanager;
 
 public class Managers {
     private Managers() {

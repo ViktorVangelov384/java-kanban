@@ -1,6 +1,9 @@
-package taskmanager;
+package ru.yandex.practicum.taskmanager;
 
-import task.*;
+import ru.yandex.practicum.task.Epic;
+import ru.yandex.practicum.task.Subtask;
+import ru.yandex.practicum.task.Task;
+
 import java.util.*;
 
 public interface TaskManager {

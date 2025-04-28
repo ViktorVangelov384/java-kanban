@@ -1,13 +1,13 @@
-package task;
+package ru.yandex.practicum.task;
 import  java.util.Objects;
 
 public class Task {
     protected int id;
     protected String name;
     protected String description;
-    protected task.TaskStatus status;
+    protected TaskStatus status;
 
-    public Task(String name, String description, task.TaskStatus status) {
+    public Task(String name, String description, TaskStatus status) {
         this.name = name;
         this.description = description;
         this.status = status;
@@ -37,11 +37,11 @@ public class Task {
         this.description = description;
     }
 
-    public task.TaskStatus getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(task.TaskStatus status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 

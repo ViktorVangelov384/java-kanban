@@ -1,7 +1,10 @@
-package taskmanager;
+package ru.yandex.practicum.taskmanager;
 
 import  org.junit.jupiter.api.Test;
-import task.*;
+import ru.yandex.practicum.task.Epic;
+import ru.yandex.practicum.task.Subtask;
+import ru.yandex.practicum.task.Task;
+import ru.yandex.practicum.task.TaskStatus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

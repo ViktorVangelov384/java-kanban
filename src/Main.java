@@ -1,8 +1,8 @@
-import task.Task;
-import task.TaskStatus;
-import taskmanager.InMemoryTaskManager;
-import task.Epic;
-import task.Subtask;
+import ru.yandex.practicum.task.Task;
+import ru.yandex.practicum.task.TaskStatus;
+import ru.yandex.practicum.taskmanager.InMemoryTaskManager;
+import ru.yandex.practicum.task.Epic;
+import ru.yandex.practicum.task.Subtask;
 
 public class Main {
 
