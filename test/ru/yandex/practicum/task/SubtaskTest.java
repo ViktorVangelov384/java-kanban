@@ -23,6 +23,7 @@ class SubtaskTest {
         assertNull(subtaskId, "Должно возвращать null для подзадачи с самоссылкой");
         assertTrue(manager.getSubtaskByEpicId(epicId).isEmpty(), "Неправильная подзача не должна добавляться");
     }
+
     @Test
     public void subtaskShouldBeEqualIfIdsAreEqual() {
         Subtask subtask1 = new Subtask("Подзадача 1", "Описание 1", TaskStatus.NEW, 1);

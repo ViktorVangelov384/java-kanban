@@ -8,32 +8,40 @@ import java.util.*;
 import java.util.ArrayList;
 
 
-
 public class InMemoryHistoryManager implements HistoryManager {
-    private static final int MAX_HISTORY_SIZE = 10;
-    private final Map<Integer, Task> history = new LinkedHashMap<>
-            (MAX_HISTORY_SIZE, 0.75f, true) {
+    private static class Node {
+        Task task;
+        Node prev;
+        Node next;
 
-        @Override
-        protected boolean removeEldestEntry(Map.Entry<Integer, Task> eldest) {
-            return size() > MAX_HISTORY_SIZE;
+        Node(Task task) {
+            this.task = task;
         }
-    };
+    }
+
+    private final Map<Integer, Node> nodeMap = new HashMap<>();
+    private Node head;
+    private Node tail;
 
     @Override
     public void add(Task task) {
         if (task == null) return;
-        history.put(task.getId(), createCopy(task));
+        remove(task.getId());
+        Node newNode = new Node(createCopy(task));
+        linkLast(newNode);
+        nodeMap.put(task.getId(), newNode);
     }
-    private Task createCopy(Task original) {
-        if (original instanceof Epic epic) {
 
+    private Task createCopy(Task original) {
+        if (original == null) {
+            return null;
+        }
+        if (original instanceof Epic epic) {
             Epic copy = new Epic(epic.getName(), epic.getDescription());
             copy.setId(epic.getId());
             copy.setStatus(epic.getStatus());
             return copy;
-        }
-        else if (original instanceof Subtask subtask) {
+        } else if (original instanceof Subtask subtask) {
             Subtask copy = new Subtask(
                     subtask.getName(),
                     subtask.getDescription(),
@@ -42,8 +50,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             );
             copy.setId(subtask.getId());
             return copy;
-        }
-        else {
+        } else {
             Task copy = new Task(
                     original.getName(),
                     original.getDescription(),
@@ -54,14 +61,50 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-
     @Override
     public void remove(int id) {
-         history.remove(id);
+        Node node = nodeMap.remove(id);
+        if (node != null) {
+            removeNode(node);
+        }
     }
 
     @Override
     public List<Task> getHistory() {
-        return new ArrayList<>(history.values());
+        return getTask();
+    }
+
+    private List<Task> getTask() {
+        List<Task> tasks = new ArrayList<>();
+        Node current = head;
+        while (current != null) {
+            tasks.add(current.task);
+            current = current.next;
+        }
+        return tasks;
+    }
+
+    private void linkLast(Node node) {
+        if (head == null) {
+            head = node;
+        } else {
+            tail.next = node;
+            node.prev = tail;
+        }
+        tail = node;
+    }
+
+    private void removeNode(Node node) {
+        if (node.prev != null) {
+            node.prev.next = node.next;
+
+        } else {
+            head = node.next;
+        }
+        if (node.next != null) {
+            node.next.prev = node.prev;
+        } else {
+            tail = node.prev;
+        }
     }
 }

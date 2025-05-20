@@ -1,6 +1,7 @@
 package ru.yandex.practicum.task;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 class TaskTest {
@@ -13,6 +14,7 @@ class TaskTest {
         task2.setId(1);
         assertEquals(task1, task2, "Задачи с одинаковым ID должны быть равны.");
     }
+
     @Test
     public void testTaskNoEqualityDifferentIds() {
         Task task1 = new Task("Задача 1", "Описание задачи 1", TaskStatus.NEW);

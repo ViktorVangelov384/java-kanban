@@ -13,21 +13,24 @@ public class Epic extends Task {
     public List<Integer> getSubtaskIds() {
         return subtaskIds;
     }
+
     public void addSubtaskId(int subtaskId) {
         if (subtaskId != this.id) {
             subtaskIds.add(subtaskId);
         }
     }
+
     public void removeSubtaskId(int subtaskId) {
         subtaskIds.remove((Integer) subtaskId);
     }
+
     @Override
     public String toString() {
         return "Epic{" +
                 "id=" + id +
                 ", name='" + name + "'" +
                 ", description='" + description + "'" +
-                ", status=" + status+
+                ", status=" + status +
                 ", subtaskIds=" + subtaskIds +
                 '}';
     }

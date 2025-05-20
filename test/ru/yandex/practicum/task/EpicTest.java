@@ -14,6 +14,7 @@ class EpicTest {
         epic.addSubtaskId(epic.getId());
         assertTrue(epic.getSubtaskIds().isEmpty(), "Эпик не должен содержать себя в списке подзадач.");
     }
+
     @Test
     public void epicsShouldBeEqualIfIdsEqual() {
         Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
