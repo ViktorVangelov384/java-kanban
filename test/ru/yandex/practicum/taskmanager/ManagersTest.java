@@ -7,6 +7,7 @@ import ru.yandex.practicum.task.TaskStatus;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 class ManagersTest {
     @Test
     public void getDefaultShouldReturnInitializedTaskManager() {
@@ -18,6 +19,7 @@ class ManagersTest {
         Task task = manager.getTaskById(taskId);
         assertNotNull(task, "Менеджер должен возвращать задачу");
     }
+
     @Test
     public void getDefaultHistoryShouldReturnInitializedHistoryManager() {
         HistoryManager historyManager = Managers.getDefaultHistory();
