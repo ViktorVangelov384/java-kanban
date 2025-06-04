@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class EpicTest {
     @Test
     public void epicShouldNotAddItselfAsSubtask() {
-        Epic epic = new Epic("Эпик", "Описание эпика");
+        Epic epic = new Epic( "Эпик", "Описание эпика");
         epic.setId(1);
 
         epic.addSubtaskId(epic.getId());
@@ -17,8 +17,8 @@ class EpicTest {
 
     @Test
     public void epicsShouldBeEqualIfIdsEqual() {
-        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
-        Epic epic2 = new Epic("Эпик 2", "Описание эпика 2");
+        Epic epic1 = new Epic( "Эпик 1", "Описание эпика 1");
+        Epic epic2 = new Epic( "Эпик 2", "Описание эпика 2");
         epic1.setId(1);
         epic2.setId(1);
 

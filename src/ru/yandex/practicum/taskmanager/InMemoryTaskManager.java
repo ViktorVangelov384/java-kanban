@@ -8,12 +8,12 @@ import ru.yandex.practicum.task.TaskStatus;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private int nextId = 1;
+    protected int nextId = 1;
 
-    private final HashMap<Integer, Task> tasks = new HashMap<>();
-    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    private final HashMap<Integer, Epic> epics = new HashMap<>();
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected final HashMap<Integer, Task> tasks = new HashMap<>();
+    protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    protected final HashMap<Integer, Epic> epics = new HashMap<>();
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public List<Task> getAllTasks() {
@@ -38,14 +38,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTaskById(int id) {
-        Task original = tasks.get(id);
-        if (original != null) {
-            historyManager.add(original);
+        Task task = tasks.get(id);
+        if (task != null) {
+            historyManager.add(task);
         }
-        if (original == null) {
+        if (task == null) {
             return null;
         }
-        return new Task(original.getName(), original.getDescription(), original.getStatus());
+        return task;
     }
 
     @Override
@@ -126,12 +126,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Integer createSubtask(Subtask subtask) {
+    public int createSubtask(Subtask subtask) {
         if (subtask == null || !epics.containsKey(subtask.getEpicId())) {
-            return null;
+            throw new IllegalArgumentException();
         }
         if (subtask.getId() == subtask.getEpicId()) {
-            return null;
+            throw new IllegalArgumentException();
         }
 
         int id = nextId++;
@@ -196,7 +196,7 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
-    private void updateEpicStatus(int epicId) {
+    protected void updateEpicStatus(int epicId) {
         Epic epic = epics.get(epicId);
         if (epic == null) {
             return;

@@ -37,7 +37,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             return null;
         }
         if (original instanceof Epic epic) {
-            Epic copy = new Epic(epic.getName(), epic.getDescription());
+            Epic copy = new Epic( epic.getName(), epic.getDescription());
             copy.setId(epic.getId());
             copy.setStatus(epic.getStatus());
             return copy;
