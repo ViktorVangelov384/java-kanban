@@ -13,7 +13,7 @@ class ManagersTest {
     public void getDefaultShouldReturnInitializedTaskManager() {
         TaskManager manager = Managers.getDefault();
         assertNotNull(manager, "Менеджер задач не должен быть null");
-        int taskId = manager.createTask(new Task( "Задача", "Описание",
+        int taskId = manager.createTask(new Task("Задача", "Описание",
                 TaskStatus.NEW));
         assertTrue(taskId > 0, "Менеджер должен корректно создавать задачи");
         Task task = manager.getTaskById(taskId);
@@ -25,7 +25,7 @@ class ManagersTest {
         HistoryManager historyManager = Managers.getDefaultHistory();
 
         assertNotNull(historyManager, "Менеджер истории нельзя быть null");
-        Task task = new Task( "Задача", "Описание", TaskStatus.NEW);
+        Task task = new Task("Задача", "Описание", TaskStatus.NEW);
         task.setId(1);
         historyManager.add(task);
 

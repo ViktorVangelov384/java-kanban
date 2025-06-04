@@ -37,7 +37,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldNotAffectHistoryWhenOriginalTaskChange() {
-        Task task = new Task( "Название", "Описание", TaskStatus.NEW);
+        Task task = new Task("Название", "Описание", TaskStatus.NEW);
         task.setId(1);
         historyManager.add(task);
 
@@ -62,7 +62,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldCreateDeepCopyForSubtaskTasks() {
-        Subtask subtask = new Subtask( "Подзадача", "Описание", TaskStatus.NEW, 1);
+        Subtask subtask = new Subtask("Подзадача", "Описание", TaskStatus.NEW, 1);
         subtask.setId(2);
         historyManager.add(subtask);
 
@@ -73,8 +73,8 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldMaintainOrderAfterMultipleAdds() {
-        Task task1 = new Task( "Задача1", "Описание1", TaskStatus.NEW);
-        Task task2 = new Task( "Задача2", "Опидание2", TaskStatus.NEW);
+        Task task1 = new Task("Задача1", "Описание1", TaskStatus.NEW);
+        Task task2 = new Task("Задача2", "Опидание2", TaskStatus.NEW);
         task1.setId(1);
         task2.setId(2);
 
@@ -90,7 +90,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldRemoveTaskFromHistoryWhenDeleted() {
-        Task task = new Task( "Задача", "Описание", TaskStatus.NEW);
+        Task task = new Task("Задача", "Описание", TaskStatus.NEW);
         task.setId(1);
         historyManager.add(task);
         historyManager.remove(1);

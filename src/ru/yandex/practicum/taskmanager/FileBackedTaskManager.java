@@ -3,7 +3,7 @@ package ru.yandex.practicum.taskmanager;
 import ru.yandex.practicum.task.*;
 
 import java.io.*;
-import java.nio.file.Files;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +33,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             epic.addSubtaskId(subtask.getId());
 
         }
+    }
+
+    @Override
+    public List<Task> getAllTasks() {
+        List<Task> allTasks = new ArrayList<>();
+        allTasks.addAll(tasks.values());
+        allTasks.addAll(epics.values());
+        allTasks.addAll(subtasks.values());
+        return allTasks;
     }
 
 
@@ -147,31 +156,29 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
-        try {
-            String content = Files.readString(file.toPath());
-            String[] lines = content.split("\n");
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            reader.readLine();
 
-            if (lines.length <= 1) return manager;
+            String line;
+            while ((line = reader.readLine()) != null) {
 
-            int maxId = 0;
-            for (int i = 1; i < lines.length; i++) {
-                Task task = fromString(lines[i]);
+
+                Task task = fromString(line);
                 if (task != null) {
-                    if (task.getId() > maxId) {
-                        maxId = task.getId();
+                    switch (task.getType()) {
+                        case TASK -> manager.tasks.put(task.getId(), task);
+                        case EPIC -> manager.epics.put(task.getId(), (Epic) task);
+                        case SUBTASK -> manager.subtasks.put(task.getId(), (Subtask) task);
                     }
-                    manager.addTaskToManager(task);
-
                 }
             }
-            manager.nextId = maxId + 1;
+            for (Subtask subtask : manager.subtasks.values()) {
+                Epic epic = manager.epics.get(subtask.getEpicId());
+                if (epic != null) {
+                    epic.addSubtaskId(subtask.getId());
+                }
+            }
 
-            for (Subtask subtask : new ArrayList<>(manager.subtasks.values())) {
-                manager.updateEpicForSubtask(subtask);
-            }
-            for (Epic epic : manager.epics.values()) {
-                manager.updateEpicStatus(epic.getId());
-            }
 
         } catch (IOException e) {
             throw new ManagerLoadException("ошибка загрузки", e);
@@ -180,10 +187,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private static Task fromString(String value) {
-        if (value == null || value.isBlank()) return null;
+
 
         String[] parts = value.split(",");
-        if (parts.length < 6) return null;
+
 
         try {
             int id = Integer.parseInt(parts[0]);
@@ -191,35 +198,27 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             String name = parts[2];
             TaskStatus status = TaskStatus.valueOf(parts[3]);
             String description = parts[4];
-            String epicIdStr = parts[5];
 
-            if (name.isEmpty() || description.isEmpty()) return null;
-
-            Task task;
-            switch (type) {
+            Task task = switch (type) {
                 case TASK:
-                    task = new Task( name, description, status);
-                    break;
+                    Task t = new Task(name, description, status);
+                    t.setId(id);
+                    yield t;
+
                 case EPIC:
-                    Epic epic = new Epic( name, description);
-                    epic.setStatus(status);
-                    task = epic;
-                    break;
+                    Epic e = new Epic(name, description);
+                    e.setId(id);
+                    e.setStatus(status);
+                    yield e;
+
                 case SUBTASK:
-                    if (epicIdStr.isEmpty()) {
-                        return null;
-                    }
-                    if (epicIdStr.isEmpty()) return null;
-                    int epicId = Integer.parseInt(epicIdStr);
-                    task =  new Subtask(name, description, status, epicId);
-                    break;
-                default:
-                    return null;
-            }
-            task.setId(id);
+                    Subtask sub = new Subtask(name, description, status, Integer.parseInt(parts[5]));
+                    sub.setId(id);
+                    yield sub;
+            };
             return task;
 
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             return null;
         }
 

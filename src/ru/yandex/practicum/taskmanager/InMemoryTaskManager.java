@@ -42,11 +42,11 @@ public class InMemoryTaskManager implements TaskManager {
         if (task != null) {
             historyManager.add(task);
         }
-        if (task == null) {
-            return null;
-        }
-        return task;
+        if (task == null) return null;
+        return new Task(task.getName(), task.getDescription(), task.getStatus());
+
     }
+
 
     @Override
     public void updateTask(Task task) {

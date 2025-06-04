@@ -13,9 +13,9 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldAddAndRetriveDifferentTaskTypes() {
-        Task task = new Task( "Задача", "Описание задачи", TaskStatus.NEW);
-        Epic epic = new Epic( "Эпик", "Описание эпика");
-        Subtask subtask = new Subtask( "Подзадача", "Описание подзадачи", TaskStatus.NEW, 2);
+        Task task = new Task("Задача", "Описание задачи", TaskStatus.NEW);
+        Epic epic = new Epic("Эпик", "Описание эпика");
+        Subtask subtask = new Subtask("Подзадача", "Описание подзадачи", TaskStatus.NEW, 2);
 
         int taskId = manager.createTask(task);
         int epicId = manager.createEpic(epic);
@@ -32,21 +32,19 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldNotModifyHistoryWhenTaskUpdated() {
-        Task task = new Task( "Задача", "Описание", TaskStatus.NEW);
+        Task task = new Task("Задача", "Описание", TaskStatus.NEW);
         int taskId = manager.createTask(task);
 
         Task taskFromManager = manager.getTaskById(taskId);
         taskFromManager.setStatus(TaskStatus.DONE);
-        assertNotEquals(taskFromManager.getStatus(),
-                manager.getTaskById(taskId).getStatus()
-        );
+        assertNotEquals(TaskStatus.DONE, manager.getTaskById(taskId).getStatus());
     }
 
     @Test
     public void shouldCleanSubtasksWhenEpicRemoved() {
         Epic epic = new Epic("Эпик", "Описание");
         int epicId = manager.createEpic(epic);
-        Subtask subtask = new Subtask( "Подзадача", "Описание", TaskStatus.NEW, epicId);
+        Subtask subtask = new Subtask("Подзадача", "Описание", TaskStatus.NEW, epicId);
         int subtaskId = manager.createSubtask(subtask);
 
         manager.deleteEpicById(epicId);
@@ -56,7 +54,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldPreventDataCorruptionTroughtSetters() {
-        Task task = new Task( "Задача", "Описание", TaskStatus.NEW);
+        Task task = new Task("Задача", "Описание", TaskStatus.NEW);
         int taskId = manager.createTask(task);
 
         Task managedTask = manager.getTaskById(taskId);
@@ -68,7 +66,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldRemoveTaskFromHistoryWhenDeletedById() {
-        Task task = new Task( "Задача", "Описание", TaskStatus.NEW);
+        Task task = new Task("Задача", "Описание", TaskStatus.NEW);
         int taskId = manager.createTask(task);
         manager.getTaskById(taskId);
         assertTrue(manager.getHistory().contains(task));
@@ -78,7 +76,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldRemoveAllTasksFromHistoryWhenDeleteAllTasks() {
-        Task task1 = new Task( "Задача1", "Описание", TaskStatus.NEW);
+        Task task1 = new Task("Задача1", "Описание", TaskStatus.NEW);
         Task task2 = new Task("Задача2", "Описание", TaskStatus.NEW);
         int taskId1 = manager.createTask(task1);
         int taskId2 = manager.createTask(task2);
@@ -92,9 +90,9 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldRemoveAllEpicsAndSubtasksFromHistoryWhenDeleteAllEpics() {
-        Epic epic = new Epic( "Эпик", "Описание");
+        Epic epic = new Epic("Эпик", "Описание");
         int epicId = manager.createEpic(epic);
-        Subtask subtask = new Subtask( "Подзадача", "Описание", TaskStatus.NEW, epicId);
+        Subtask subtask = new Subtask("Подзадача", "Описание", TaskStatus.NEW, epicId);
         int subtaskId = manager.createSubtask(subtask);
         manager.getEpicById(epicId);
         manager.getSubtaskById(subtaskId);
@@ -105,10 +103,10 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldRemoveAllSubtasksFromHistoryWhenDeleteAllSubtasks() {
-        Epic epic = new Epic( "Эпик", "Описание");
+        Epic epic = new Epic("Эпик", "Описание");
         int epicId = manager.createEpic(epic);
-        Subtask subtask1 = new Subtask( " Подзадача", "Описание", TaskStatus.NEW, epicId);
-        Subtask subtask2 = new Subtask( "Подзадача", "Описание", TaskStatus.NEW, epicId);
+        Subtask subtask1 = new Subtask(" Подзадача", "Описание", TaskStatus.NEW, epicId);
+        Subtask subtask2 = new Subtask("Подзадача", "Описание", TaskStatus.NEW, epicId);
         int subtask1Id = manager.createSubtask(subtask1);
         int subtask2Id = manager.createSubtask(subtask2);
         manager.getSubtaskById(subtask1Id);
