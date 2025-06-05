@@ -1,11 +1,11 @@
 package ru.yandex.practicum.taskmanager;
 
+import ru.yandex.practicum.exceptions.ManagerLoadException;
+import ru.yandex.practicum.exceptions.ManagerSaveException;
 import ru.yandex.practicum.task.*;
 
 import java.io.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
@@ -13,35 +13,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public FileBackedTaskManager(File file) {
         this.file = file;
-    }
-
-
-    private void addTaskToManager(Task task) {
-        if (task.getType() == TaskType.EPIC) {
-            epics.put(task.getId(), (Epic) task);
-        } else if (task.getType() == TaskType.SUBTASK) {
-            subtasks.put(task.getId(), (Subtask) task);
-        } else {
-            tasks.put(task.getId(), task);
-        }
-    }
-
-    private void updateEpicForSubtask(Subtask subtask) {
-        Epic epic = epics.get(subtask.getEpicId());
-        if (epic != null) {
-            List<Subtask> epicSubtasks = getSubtaskByEpicId(epic.getId());
-            epic.addSubtaskId(subtask.getId());
-
-        }
-    }
-
-    @Override
-    public List<Task> getAllTasks() {
-        List<Task> allTasks = new ArrayList<>();
-        allTasks.addAll(tasks.values());
-        allTasks.addAll(epics.values());
-        allTasks.addAll(subtasks.values());
-        return allTasks;
     }
 
 
@@ -121,24 +92,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    public void save() {
+    private void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(HEADER + "\n");
 
-            for (Task task : getAllTasks()) {
+            for (Task task : tasks.values()) {
                 writer.write(taskToString(task) + "\n");
             }
-            for (Epic epic : getAllEpics()) {
+            for (Epic epic : epics.values()) {
                 writer.write(taskToString(epic) + "\n");
 
             }
-            for (Subtask subtask : getAllSubtasks()) {
+            for (Subtask subtask : subtasks.values()) {
                 writer.write(taskToString(subtask) + "\n");
 
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при сохранении в файл", e);
         }
+
     }
 
 
@@ -156,6 +128,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
+        int maxId = 0;
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             reader.readLine();
 
@@ -165,6 +138,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
                 Task task = fromString(line);
                 if (task != null) {
+                    if (task.getId() > maxId) {
+                        maxId = task.getId();
+                    }
                     switch (task.getType()) {
                         case TASK -> manager.tasks.put(task.getId(), task);
                         case EPIC -> manager.epics.put(task.getId(), (Epic) task);
@@ -172,6 +148,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     }
                 }
             }
+            manager.nextId = maxId + 1;
             for (Subtask subtask : manager.subtasks.values()) {
                 Epic epic = manager.epics.get(subtask.getEpicId());
                 if (epic != null) {
@@ -187,11 +164,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private static Task fromString(String value) {
-
-
         String[] parts = value.split(",");
-
-
         try {
             int id = Integer.parseInt(parts[0]);
             TaskType type = TaskType.valueOf(parts[1].trim());

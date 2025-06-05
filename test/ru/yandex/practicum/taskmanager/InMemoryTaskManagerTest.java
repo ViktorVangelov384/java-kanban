@@ -36,8 +36,19 @@ public class InMemoryTaskManagerTest {
         int taskId = manager.createTask(task);
 
         Task taskFromManager = manager.getTaskById(taskId);
+
         taskFromManager.setStatus(TaskStatus.DONE);
-        assertNotEquals(TaskStatus.DONE, manager.getTaskById(taskId).getStatus());
+
+        assertEquals(TaskStatus.DONE, manager.getTaskById(taskId).getStatus());
+
+        assertSame(taskFromManager, manager.getTaskById(taskId));
+
+        Task updatedTask = new Task("Обновленная", "Новое описание", TaskStatus.IN_PROGRESS);
+        updatedTask.setId(taskId);
+        manager.updateTask(updatedTask);
+
+        assertEquals(TaskStatus.IN_PROGRESS, manager.getTaskById(taskId).getStatus());
+
     }
 
     @Test
@@ -58,7 +69,7 @@ public class InMemoryTaskManagerTest {
         int taskId = manager.createTask(task);
 
         Task managedTask = manager.getTaskById(taskId);
-        managedTask.setStatus(TaskStatus.DONE);
+        TaskStatus originalStatus = managedTask.getStatus();
 
         Task newTask = manager.getTaskById(taskId);
         assertEquals(TaskStatus.NEW, newTask.getStatus());

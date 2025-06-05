@@ -51,31 +51,55 @@ public class FileBackedTaskManagerTest {
     }
 
     @Test
-    void shouldSaveMultipleTasks() {
-        File tempFile = new File("test_tasks.csv");
+    void shouldSaveMultipleTasks() throws IOException {
+        File tempFile = File.createTempFile("tasks", ".csv");
         FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
 
         Task task1 = new Task("Задача", "Описание", TaskStatus.NEW);
         Epic epic1 = new Epic("эпик", "Описание");
         Subtask subtask1 = new Subtask("Подзадача", "Описание", TaskStatus.DONE, 2);
 
-        manager.createTask(task1);
-        manager.createEpic(epic1);
-        manager.createSubtask(subtask1);
+        int taskId = manager.createTask(task1);
+        int epicId = manager.createEpic(epic1);
+        int subtaskId = manager.createSubtask(subtask1);
+
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
 
-        List<Task> allTasks = loadedManager.getAllTasks();
-        assertEquals(3, loadedManager.getAllTasks().size(), "Должны загрузиться все задачи");
-
-        assertNotNull(loadedManager.getTaskById(1), "задача не загрузилась");
-        assertNotNull(loadedManager.getEpicById(2), "эпик не загрузился");
-        assertNotNull(loadedManager.getSubtaskById(3), "Подзадача не загрузилась");
-
-        Subtask loadedSubtask = loadedManager.getSubtaskById(3);
-        assertEquals(2, loadedSubtask.getEpicId(), "Не сохранилась связь подзадачи с эпиком");
+        assertEquals(1, loadedManager.getAllTasks().size());
+        assertEquals(1, loadedManager.getAllEpics().size());
+        assertEquals(1, loadedManager.getAllSubtasks().size());
 
 
+        Task loadedTask = loadedManager.getTaskById(taskId);
+        assertNotNull(loadedTask);
+        assertEquals(task1.getId(), loadedTask.getId(), "ID в Task не совпадает");
+        assertEquals(task1.getName(), loadedTask.getName(), "название не совпадает");
+        assertEquals(task1.getDescription(), loadedTask.getDescription(), "описание не совпадает");
+        assertEquals(task1.getStatus(), loadedTask.getStatus(), "статус не совпадает");
+        assertEquals(task1.getType(), loadedTask.getType());
+
+
+        Epic loadedEpic = loadedManager.getEpicById(epicId);
+        assertNotNull(loadedEpic);
+        assertEquals(epic1.getId(), loadedEpic.getId(), "ID не совпадает");
+        assertEquals(epic1.getName(), loadedEpic.getName(), "название не совпадает");
+        assertEquals(epic1.getDescription(), loadedEpic.getDescription(), "описание не совпадает");
+        assertEquals(epic1.getStatus(), loadedEpic.getStatus(), "статус не совпадает");
+        assertEquals(epic1.getType(), loadedEpic.getType(), "тип не совпадает");
+
+        Subtask loadedSubtask = loadedManager.getSubtaskById(subtaskId);
+        assertNotNull(loadedSubtask);
+        assertEquals(subtask1.getId(), loadedSubtask.getId(), "ID не совпадает");
+        assertEquals(subtask1.getName(), loadedSubtask.getName(), "название не совпадает");
+        assertEquals(subtask1.getDescription(), loadedSubtask.getDescription(), "описание не совпадает");
+        assertEquals(subtask1.getStatus(), loadedSubtask.getStatus(), "статус не совпадает");
+        assertEquals(subtask1.getType(), loadedSubtask.getType());
+        assertEquals(subtask1.getEpicId(), loadedSubtask.getEpicId(), "ID эпика в подзадаче не совпадает");
+
+        List<Integer> subtaskIdsInEpic = loadedEpic.getSubtaskIds();
+        assertFalse(subtaskIdsInEpic.isEmpty());
+        assertEquals(subtaskId, subtaskIdsInEpic.get(0));
     }
 }
 
