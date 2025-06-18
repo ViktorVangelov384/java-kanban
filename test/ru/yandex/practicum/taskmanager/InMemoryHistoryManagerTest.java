@@ -104,4 +104,59 @@ class InMemoryHistoryManagerTest {
         historyManager.remove(999);
     }
 
+    @Test
+    public void shouldRemoveFromBeginningOfHistory() {
+        Task task1 = new Task("Задача1", "Описание", TaskStatus.NEW);
+        Task task2 = new Task("Задача2", "Описание", TaskStatus.NEW);
+        task1.setId(1);
+        task2.setId(2);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+
+        historyManager.remove(1);
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(1, history.size());
+        assertEquals(task2, history.get(0));
+    }
+
+    @Test
+    public void shouldRemoveFromMiddleOfHistory() {
+        Task task1 = new Task("Задача1", "Описание", TaskStatus.NEW);
+        Task task2 = new Task("Задача2", "Описание", TaskStatus.NEW);
+        Task task3 = new Task("Задача3", "Описание", TaskStatus.NEW);
+        task1.setId(1);
+        task2.setId(2);
+        task3.setId(3);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+
+        historyManager.remove(2);
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(2, history.size());
+        assertEquals(task1, history.get(0));
+        assertEquals(task3, history.get(1));
+    }
+
+    @Test
+    public void shouldRemoveFromEndOfHistory() {
+        Task task1 = new Task("Задача1", "Описание", TaskStatus.NEW);
+        Task task2 = new Task("Задача2", "Описание", TaskStatus.NEW);
+        task1.setId(1);
+        task2.setId(2);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+
+        historyManager.remove(2);
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(1, history.size());
+        assertEquals(task1, history.get(0));
+    }
+
 }

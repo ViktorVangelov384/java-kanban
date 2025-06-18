@@ -1,25 +1,62 @@
 package ru.yandex.practicum.taskmanager;
 
 import org.junit.jupiter.api.*;
+import ru.yandex.practicum.exceptions.ManagerLoadException;
 import ru.yandex.practicum.task.*;
 
 import java.io.*;
 import java.nio.file.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FileBackedTaskManagerTest {
-
+public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     private File tempFile;
-    private FileBackedTaskManager manager;
 
     @BeforeEach
     void setUp() throws IOException {
 
         tempFile = File.createTempFile("tasks", ".csv");
         tempFile.deleteOnExit();
-        manager = new FileBackedTaskManager(tempFile);
+        manager = createManager();
+
+        task = new Task("Задача", "Описание", TaskStatus.NEW);
+        epic = new Epic("Эпик", "Описание");
+        subtask = new Subtask("Подзадача", "Описание", TaskStatus.NEW, 1);
+    }
+
+    @Override
+    protected FileBackedTaskManager createManager() {
+        return new FileBackedTaskManager(tempFile);
+    }
+
+    @Test
+    void shouldSaveAndLoadEmptyManager() {
+        FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(tempFile);
+        assertTrue(loaded.getAllTasks().isEmpty());
+        assertTrue(loaded.getAllEpics().isEmpty());
+        assertTrue(loaded.getAllSubtasks().isEmpty());
+    }
+
+    @Test
+    void shouldSaveAndLoadTasks() {
+        int taskId = manager.createTask(new Task("Задача", "Описание", TaskStatus.NEW));
+        int epicId = manager.createEpic(new Epic("Эпик", "Описание"));
+        int subtaskId = manager.createSubtask(new Subtask("Подзадача", "Описание", TaskStatus.NEW, epicId));
+
+        FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(tempFile);
+
+        assertNotNull(loaded.getTaskById(taskId));
+        assertNotNull(loaded.getEpicById(epicId));
+        assertNotNull(loaded.getSubtaskById(subtaskId));
+    }
+
+    @Test
+    void shouldThrowWhenLoadingInvalidFile() {
+        File invalidFile = new File("nonexistent.csv");
+        assertThrows(ManagerLoadException.class, () -> FileBackedTaskManager.loadFromFile(invalidFile));
     }
 
     @Test
@@ -102,4 +139,3 @@ public class FileBackedTaskManagerTest {
         assertEquals(subtaskId, subtaskIdsInEpic.get(0));
     }
 }
-

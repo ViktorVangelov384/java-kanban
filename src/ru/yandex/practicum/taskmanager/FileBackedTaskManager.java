@@ -1,10 +1,13 @@
 package ru.yandex.practicum.taskmanager;
 
+
 import ru.yandex.practicum.exceptions.ManagerLoadException;
 import ru.yandex.practicum.exceptions.ManagerSaveException;
 import ru.yandex.practicum.task.*;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
@@ -68,6 +71,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
+    public Epic getEpicById(int id) {
+        Epic epic = super.getEpicById(id);
+        if (epic != null) {
+            historyManager.add(epic);
+        }
+        return epic;
+    }
+
+    @Override
     public int createSubtask(Subtask subtask) {
         int id = super.createSubtask(subtask);
         save();
@@ -115,6 +127,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
 
     private String taskToString(Task task) {
+        String startTimeStr = task.getStartTime() != null ? task.getStartTime().toString() : null;
+        String durationStr = task.getDuration() != null ? String.valueOf(task.getDuration().toMinutes()) : "0";
         String epicId = (task instanceof Subtask) ? String.valueOf(((Subtask) task).getEpicId()) : "";
         return String.join(",",
                 String.valueOf(task.getId()),
@@ -122,6 +136,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 task.getName(),
                 task.getStatus().name(),
                 task.getDescription(),
+                startTimeStr,
+                durationStr,
                 epicId
         );
     }
@@ -140,6 +156,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 if (task != null) {
                     if (task.getId() > maxId) {
                         maxId = task.getId();
+                    }
+                    if (task.getStartTime() != null && manager.hasTimeOverlaps(task)) {
+                        throw new IllegalStateException();
                     }
                     switch (task.getType()) {
                         case TASK -> manager.tasks.put(task.getId(), task);
@@ -172,9 +191,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             TaskStatus status = TaskStatus.valueOf(parts[3]);
             String description = parts[4];
 
+            LocalDateTime startTime = !parts[5].equals("null") ? LocalDateTime.parse(parts[5]) : null;
+            Duration duration = Duration.ofMinutes(Long.parseLong(parts[6]));
+
             Task task = switch (type) {
                 case TASK:
-                    Task t = new Task(name, description, status);
+                    Task t = new Task(name, description, status, startTime, duration);
                     t.setId(id);
                     yield t;
 
@@ -185,7 +207,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     yield e;
 
                 case SUBTASK:
-                    Subtask sub = new Subtask(name, description, status, Integer.parseInt(parts[5]));
+                    Subtask sub = new Subtask(name, description, status, Integer.parseInt(parts[7]),
+                            startTime, duration);
                     sub.setId(id);
                     yield sub;
             };

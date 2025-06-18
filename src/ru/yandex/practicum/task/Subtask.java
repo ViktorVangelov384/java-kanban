@@ -1,11 +1,18 @@
 package ru.yandex.practicum.task;
 
+import java.time.LocalDateTime;
+import java.time.Duration;
+
 public class Subtask extends Task {
     private int epicId;
 
-    public Subtask(String name, String description, TaskStatus status, int epicId) {
-        super(name, description, status);
+    public Subtask(String name, String description, TaskStatus status, int epicId, LocalDateTime startTime, Duration duration) {
+        super(name, description, status, startTime, duration);
         this.epicId = epicId;
+    }
+
+    public Subtask(String name, String description, TaskStatus status, int epicId) {
+        this(name, description, status, epicId, null, Duration.ZERO);
     }
 
     @Override
@@ -23,12 +30,14 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "Subtask{" +
-                "id=" + id + ", " +
-                "name= '" + name + "', " +
-                "description= '" + description + "', " +
-                "status=" + status + ", " +
-                "epicId=" + epicId +
-                "}";
+        return String.format(
+                "Subtask{id=%d, name='%s', description='%s', status=%s, " +
+                        "startTime=%s, duration=%d min, endTime=%s, epicId=%d}",
+                id, name, description, status,
+                startTime != null ? startTime : "null",
+                duration.toMinutes(),
+                endTime != null ? endTime : "null",
+                epicId
+        );
     }
 }

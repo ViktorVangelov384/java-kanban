@@ -4,24 +4,27 @@ import ru.yandex.practicum.taskmanager.InMemoryTaskManager;
 import ru.yandex.practicum.task.Epic;
 import ru.yandex.practicum.task.Subtask;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Main {
 
     public static void main(String[] args) {
         InMemoryTaskManager manager = new InMemoryTaskManager();
 
         int task1 = manager.createTask(new Task("Задача 1", "Описание 1 задачи",
-                TaskStatus.NEW));
+                TaskStatus.NEW, LocalDateTime.now(), Duration.ofMinutes(1)));
         int task2 = manager.createTask(new Task("Задача 2", "Описание 2 задачи",
-                TaskStatus.IN_PROGRESS));
+                TaskStatus.IN_PROGRESS, LocalDateTime.now().plusHours(1), Duration.ofMinutes(5)));
         int epic1 = manager.createEpic(new Epic("Эпик 1", "Описание 1 эпика"));
         int epic2 = manager.createEpic(new Epic("Эпик 2", "Описание 2 эпика"));
 
         int subtask1 = manager.createSubtask(new Subtask("Подзадача 1", "Описание 1 подзадачи",
-                TaskStatus.NEW, epic1));
+                TaskStatus.NEW, epic1, LocalDateTime.now().plusHours(2), Duration.ofMinutes(20)));
         int subtask2 = manager.createSubtask(new Subtask("Подзадача 2", "Описание 2 подзадачи",
-                TaskStatus.IN_PROGRESS, epic2));
+                TaskStatus.IN_PROGRESS, epic2, LocalDateTime.now().plusHours(3), Duration.ofMinutes(15)));
         int subtask3 = manager.createSubtask(new Subtask("Подзадача 3", "Описание 3 подзадачи",
-                TaskStatus.DONE, epic2));
+                TaskStatus.DONE, epic2, LocalDateTime.now().plusHours(4), Duration.ofMinutes(20)));
 
         System.out.println("Все задачи:");
         for (Task task : manager.getAllTasks()) {
