@@ -144,6 +144,14 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         assertEquals(task1.getDuration(), loadedTask.getDuration());
         assertEquals(task1.getEndTime(), loadedTask.getEndTime());
 
+        assertEquals(epic1.getStartTime(), loadedEpic.getStartTime());
+        assertEquals(epic1.getDuration(), loadedEpic.getDuration());
+        assertEquals(epic1.getEndTime(), loadedEpic.getEndTime());
+
+        assertEquals(subtask1.getStartTime(), loadedSubtask.getStartTime());
+        assertEquals(subtask1.getDuration(), loadedSubtask.getDuration());
+        assertEquals(subtask1.getEndTime(), loadedSubtask.getEndTime());
+
 
         LocalDateTime now = LocalDateTime.now();
         Task taskWithTime = new Task("Задача2", "Описание", TaskStatus.NEW,

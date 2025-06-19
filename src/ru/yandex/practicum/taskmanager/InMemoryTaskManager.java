@@ -32,9 +32,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
-        for (Integer taskId : tasks.keySet()) {
-            removeFromPrioritized(tasks.get(taskId));
-            historyManager.remove(taskId);
+        for (Task task : tasks.values()) {
+            removeFromPrioritized(task);
+            historyManager.remove(task.getId());
         }
         tasks.clear();
     }
@@ -293,7 +293,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtasksWithTime.isEmpty()) {
             epic.setStartTime(null);
             epic.setDuration(Duration.ZERO);
-            epic.setFinishTime(null);
+            epic.setEndTime(null);
             return;
         }
         LocalDateTime minStart = subtasksWithTime.stream()

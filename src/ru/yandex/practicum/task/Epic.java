@@ -36,14 +36,10 @@ public class Epic extends Task {
         return endTime;
     }
 
-    public LocalDateTime setEndTime(LocalDateTime endTime) {
-        return endTime;
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
-
-    public void setFinishTime(LocalDateTime finishTime) {
-        this.endTime = finishTime;
-    }
 
     @Override
     public String toString() {
