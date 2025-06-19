@@ -100,6 +100,8 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         int epicId = manager.createEpic(epic1);
         int subtaskId = manager.createSubtask(subtask1);
 
+        List<Task> originalPrioritized = manager.getPrioritizedTasks();
+
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
 
@@ -137,5 +139,27 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         List<Integer> subtaskIdsInEpic = loadedEpic.getSubtaskIds();
         assertFalse(subtaskIdsInEpic.isEmpty());
         assertEquals(subtaskId, subtaskIdsInEpic.get(0));
+
+        assertEquals(task1.getStartTime(), loadedTask.getStartTime());
+        assertEquals(task1.getDuration(), loadedTask.getDuration());
+        assertEquals(task1.getEndTime(), loadedTask.getEndTime());
+
+
+        LocalDateTime now = LocalDateTime.now();
+        Task taskWithTime = new Task("Задача2", "Описание", TaskStatus.NEW,
+                now, Duration.ofMinutes(30));
+        Subtask subtaskWithTime = new Subtask("Подзадача", "Описание", TaskStatus.DONE, epicId,
+                now.plusHours(1), Duration.ofHours(1));
+        manager.createTask(taskWithTime);
+        manager.createSubtask(subtaskWithTime);
+
+        manager.save();
+        loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
+        List<Task> prioritized = loadedManager.getPrioritizedTasks();
+        assertEquals(2, prioritized.size());
+        assertTrue(prioritized.contains(taskWithTime));
+        assertTrue(prioritized.contains(subtaskWithTime));
+        assertEquals(taskWithTime, prioritized.get(0));
     }
+
 }

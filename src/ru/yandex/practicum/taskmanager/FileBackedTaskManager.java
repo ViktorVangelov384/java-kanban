@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
-    private static final String HEADER = "id,type,name,status,description,epic";
+    private static final String HEADER = "id,type,name,status,description,startTime," +
+            "duration,epic";
 
     public FileBackedTaskManager(File file) {
         this.file = file;
@@ -70,14 +71,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    @Override
-    public Epic getEpicById(int id) {
-        Epic epic = super.getEpicById(id);
-        if (epic != null) {
-            historyManager.add(epic);
-        }
-        return epic;
-    }
 
     @Override
     public int createSubtask(Subtask subtask) {
@@ -104,7 +97,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    private void save() {
+    protected void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(HEADER + "\n");
 
@@ -127,7 +120,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
 
     private String taskToString(Task task) {
-        String startTimeStr = task.getStartTime() != null ? task.getStartTime().toString() : null;
+        String startTimeStr = task.getStartTime() != null ? task.getStartTime().toString() : "null";
         String durationStr = task.getDuration() != null ? String.valueOf(task.getDuration().toMinutes()) : "0";
         String epicId = (task instanceof Subtask) ? String.valueOf(((Subtask) task).getEpicId()) : "";
         return String.join(",",
@@ -151,7 +144,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             String line;
             while ((line = reader.readLine()) != null) {
 
-
                 Task task = fromString(line);
                 if (task != null) {
                     if (task.getId() > maxId) {
@@ -161,10 +153,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         throw new IllegalStateException();
                     }
                     switch (task.getType()) {
-                        case TASK -> manager.tasks.put(task.getId(), task);
-                        case EPIC -> manager.epics.put(task.getId(), (Epic) task);
-                        case SUBTASK -> manager.subtasks.put(task.getId(), (Subtask) task);
+                        case TASK -> {
+                            manager.tasks.put(task.getId(), task);
+                            manager.addToPrioritizedTasks(task);
+                        }
+                        case EPIC -> {
+                            Epic epic = (Epic) task;
+                            manager.epics.put(task.getId(), epic);
+                        }
+                        case SUBTASK -> {
+                            Subtask subtask = (Subtask) task;
+                            manager.subtasks.put(task.getId(), subtask);
+                            manager.addToPrioritizedTasks(subtask);
+                        }
                     }
+
                 }
             }
             manager.nextId = maxId + 1;
@@ -173,6 +176,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 if (epic != null) {
                     epic.addSubtaskId(subtask.getId());
                 }
+            }
+            for (Epic epic : manager.epics.values()) {
+                manager.updateEpicTime(epic.getId());
             }
 
 
@@ -204,6 +210,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Epic e = new Epic(name, description);
                     e.setId(id);
                     e.setStatus(status);
+                    if (startTime != null) {
+                        e.setStartTime(startTime);
+                        e.setDuration(duration);
+                    }
                     yield e;
 
                 case SUBTASK:

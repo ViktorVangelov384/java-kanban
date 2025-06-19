@@ -30,14 +30,15 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return String.format(
-                "Subtask{id=%d, name='%s', description='%s', status=%s, " +
-                        "startTime=%s, duration=%d min, endTime=%s, epicId=%d}",
-                id, name, description, status,
-                startTime != null ? startTime : "null",
-                duration.toMinutes(),
-                endTime != null ? endTime : "null",
-                epicId
-        );
+        return "Subtask{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                ", startTime=" + startTime +
+                ", duration=" + duration.toMinutes() + "m" +
+                ", endTime=" + getEndTime() +
+                ", epicId=" + epicId +
+                '}';
     }
 }
