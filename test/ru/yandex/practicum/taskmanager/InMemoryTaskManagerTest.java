@@ -8,8 +8,27 @@ import ru.yandex.practicum.task.TaskStatus;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class InMemoryTaskManagerTest {
+public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     private final TaskManager manager = Managers.getDefault();
+
+    @Override
+    protected InMemoryTaskManager createManager() {
+        return new InMemoryTaskManager();
+    }
+
+    @Test
+    void shouldNotAllowSubtaskWithoutEpic() {
+        assertThrows(IllegalArgumentException.class, () -> manager.createSubtask(new Subtask("Подзадача",
+                "Описание", TaskStatus.NEW, 999)));
+    }
+
+    @Test
+    void shouldNotAllowSubtaskToBeItsOwnEpic() {
+        int epicId = manager.createEpic(new Epic("Эпик", "Описание"));
+        Subtask subtask = new Subtask("Подзадача", "Описание", TaskStatus.NEW, epicId);
+        subtask.setId(epicId);
+        assertThrows(IllegalArgumentException.class, () -> manager.createSubtask(subtask));
+    }
 
     @Test
     public void shouldAddAndRetriveDifferentTaskTypes() {

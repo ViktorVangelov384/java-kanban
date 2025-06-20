@@ -2,12 +2,15 @@ package ru.yandex.practicum.task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Epic extends Task {
     private final ArrayList<Integer> subtaskIds = new ArrayList<>();
+    protected LocalDateTime endTime;
 
     public Epic(String name, String description) {
-        super(name, description, TaskStatus.NEW);
+        super(name, description, TaskStatus.NEW, null, Duration.ZERO);
     }
 
     @Override
@@ -29,30 +32,14 @@ public class Epic extends Task {
         subtaskIds.remove((Integer) subtaskId);
     }
 
-    public void updateStatus(List<Subtask> subtasks) {
-        if (subtasks.isEmpty()) {
-            this.status = TaskStatus.NEW;
-            return;
-        }
-
-        boolean allNew = true;
-        boolean allDone = true;
-        for (Subtask subtask : subtasks) {
-            if (subtask.getStatus() != TaskStatus.NEW) {
-                allNew = false;
-            }
-            if (subtask.getStatus() != TaskStatus.DONE) {
-                allDone = false;
-            }
-        }
-        if (allNew) {
-            this.status = TaskStatus.NEW;
-        } else if (allDone) {
-            this.status = TaskStatus.DONE;
-        } else {
-            this.status = TaskStatus.IN_PROGRESS;
-        }
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
 
     @Override
     public String toString() {
@@ -61,6 +48,9 @@ public class Epic extends Task {
                 ", name='" + name + "'" +
                 ", description='" + description + "'" +
                 ", status=" + status +
+                ", startTime=" + startTime +
+                ", duration=" + duration.toMinutes() + "m" +
+                ", endTime=" + endTime +
                 ", subtaskIds=" + subtaskIds +
                 '}';
     }
