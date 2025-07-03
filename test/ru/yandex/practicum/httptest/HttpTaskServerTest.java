@@ -145,6 +145,6 @@ public class HttpTaskServerTest {
         assertEquals(2, prioritized.size());
         assertEquals("Задача 2", prioritized.get(0).getName());
     }
-    
+
 
 }

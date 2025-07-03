@@ -5,17 +5,12 @@ import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
 
-
-import com.sun.net.httpserver.HttpHandler;
 import ru.yandex.practicum.taskmanager.TaskManager;
 
-public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
-
-    private final TaskManager taskManager;
+public class HistoryHandler extends BaseHttpHandler {
 
     public HistoryHandler(TaskManager taskManager, Gson gson) {
-        super(gson);
-        this.taskManager = taskManager;
+        super(taskManager, gson);
     }
 
     @Override

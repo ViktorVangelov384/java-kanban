@@ -3,7 +3,6 @@ package ru.yandex.practicum.http.handlers;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import ru.yandex.practicum.taskmanager.TaskManager;
 
 import java.io.IOException;
@@ -13,12 +12,10 @@ import java.util.Optional;
 
 import ru.yandex.practicum.task.Task;
 
-public class TaskHandler extends BaseHttpHandler implements HttpHandler {
-    private final TaskManager taskManager;
+public class TaskHandler extends BaseHttpHandler {
 
     public TaskHandler(TaskManager taskManager, Gson gson) {
-        super(gson);
-        this.taskManager = taskManager;
+        super(taskManager, gson);
     }
 
     @Override
@@ -44,6 +41,10 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                 case "POST":
                     String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
                     System.out.println("Получен POST-запрос с телом: " + body);
+                    if (body == null || body.isEmpty()) {
+                        sendNotFound(exchange, "Тело запроса не может быть пустым");
+                        break;
+                    }
                     try {
                         Task task = gson.fromJson(body, Task.class);
                         if (task == null) {

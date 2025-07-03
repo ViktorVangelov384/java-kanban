@@ -9,17 +9,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 
-import com.sun.net.httpserver.HttpHandler;
 import ru.yandex.practicum.taskmanager.TaskManager;
 import ru.yandex.practicum.task.Subtask;
 
-public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
-
-    private final TaskManager taskManager;
+public class SubtaskHandler extends BaseHttpHandler {
 
     public SubtaskHandler(TaskManager taskManager, Gson gson) {
-        super(gson);
-        this.taskManager = taskManager;
+        super(taskManager, gson);
     }
 
     @Override
@@ -45,6 +41,10 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
                 case "POST":
                     String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
                     Subtask subtask = gson.fromJson(body, Subtask.class);
+                    if (body == null || body.isEmpty()) {
+                        sendNotFound(exchange, "Тело запроса не может быть пустым");
+                        break;
+                    }
                     try {
                         if (subtask.getId() == 0) {
                             int createdSubtask = taskManager.createSubtask(subtask);

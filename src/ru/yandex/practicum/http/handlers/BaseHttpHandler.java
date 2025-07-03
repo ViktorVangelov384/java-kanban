@@ -1,19 +1,21 @@
 package ru.yandex.practicum.http.handlers;
 
-
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import ru.yandex.practicum.taskmanager.TaskManager;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-
-public abstract class BaseHttpHandler {
+public abstract class BaseHttpHandler implements HttpHandler {
     protected final Gson gson;
+    protected final TaskManager taskManager;
 
-    protected BaseHttpHandler(Gson gson) {
+    protected BaseHttpHandler(TaskManager taskManager, Gson gson) {
         this.gson = gson;
+        this.taskManager = taskManager;
     }
 
     protected void sendText(HttpExchange exchange, String text) throws IOException {
